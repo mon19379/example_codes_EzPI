@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <wiringPi.h>
 #include <wiringPiSPI.h>
+#include <softPwm.h>
 
 #define SPI_CHANNEL	      0	// Canal SPI, 0 ó 1
 #define SPI_SPEED 	1500000	// Velocidad de la comunicación SPI (reloj, en HZ)
@@ -17,12 +18,14 @@
 #define archive "archivo.txt"
 void boton (void);
 char buffer[5];
-uint16_t get_ADC(int channel);	
+uint16_t get_ADC(int channel);
+uint16_t x;	
 
 int main(void)
 {
     uint16_t ADCvalue;
-
+	wiringPiSetup();
+	softPwmCreate(12, 0, 180); 
 	if(wiringPiSPISetup(SPI_CHANNEL, SPI_SPEED) < 0) {
 		printf("wiringPiSPISetup falló.\n");
 		return(-1);
@@ -37,6 +40,10 @@ int main(void)
 		printf("Valor de la conversión: %d\n", ADCvalue);
 		fflush(stdout);
 		usleep(1000);
+		x = (ADCvalue/1023)*180;
+		softPwmWrite (12, x);
+
+		
 	}
    
 

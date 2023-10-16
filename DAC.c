@@ -10,7 +10,7 @@
 #define SPI_SPEED 	1500000	
                             
 #define ADC_CHANNEL       0	
-#define DAC_CHANNEL       0
+
 
 void boton (void);
 char buffer[5];
@@ -18,6 +18,9 @@ char buffer1[5];
 uint16_t get_ADC(int channel);
 uint16_t get_DAC(int channel1);	
 uint8_t chan = 1;
+uint16_t cont = 0;
+
+
 int main(void)
 {
     uint16_t ADCvalue;
@@ -32,14 +35,23 @@ int main(void)
     pinMode(10, OUTPUT);
     pinMode(11, OUTPUT);
     digitalWrite(10,HIGH);
-    digitalWrite(11,HIGH);
+    //digitalWrite(11,HIGH);
+
+	spiData[0] =(uint13_t)((0b0111 << 12)  | (0x0FFF & (int)cont));  
+												
+	spiData[1] = 0;	
 
 
 
-	 while(1){
-       
-	/*   
-      
+	while(1){
+
+		digitalWrite(11,LOW);
+		cont++;
+		if (cont == 1023){
+			cont = 0;
+		}
+
+	/*    
         if(chan == 0){
             digitalWrite(10,LOW);
             ADCvalue = get_ADC(ADC_CHANNEL);
@@ -51,10 +63,10 @@ int main(void)
         }*/
 
      //   if (chan == 1){
-            digitalWrite(11,LOW);
-            DACvalue = get_DAC(DAC_CHANNEL);
-	    DACvalue =;
-	    printf("Valor: %d\n", DACvalue);
+            //digitalWrite(11,LOW);
+           // DACvalue = get_DAC(DAC_CHANNEL);
+	   	 	//DACvalue =;
+	    	//printf("Valor: %d\n", DACvalue);
 			
     //    }
 	
@@ -67,7 +79,7 @@ int main(void)
 
 
 
-
+/*
 uint16_t get_ADC(int ADC_chan)
 {
 	uint8_t spiData[2];	
@@ -90,15 +102,13 @@ uint16_t get_ADC(int ADC_chan)
 
 	return(resultado);
 }
+*/
 
 
 uint16_t get_DAC(int DAC_chan)
 {
     uint8_t spiData[2];	
 	uint16_t resultado1;
-
-	if((DAC_chan < 0) || (DAC_chan > 1))
-		DAC_chan = 0;
 
 
 
