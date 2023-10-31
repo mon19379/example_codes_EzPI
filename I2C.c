@@ -1,54 +1,43 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <stdint.h>
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
 
 #define RTC_ADDR 0x68
 
-uint16_t fd;
-uint16_t min;
-uint16_t h;
-uint16_t segs;
-uint16_t n;
-uint16_t day;
-uint16_t month;
-uint16_t year;
+uint8_t SEC, MIN, H, DAY, MONTH, YEAR;
 
-int main(){
+int main() {
+    int fd;
     
     if ((fd = wiringPiI2CSetup(RTC_ADDR)) == -1) {
-    printf("Error al abrir la conexión I2C con el RTC\n");
-    return 1;
+        printf("Error al abrir la conexión I2C con el RTC\n");
+        return 1;
     }
 
-    wiringPiI2CWrite(fd, 0xD0);
-    wiringPiI2CWrite(fd, 0);
-    wiringPiI2CWrite(fd, 0b00000000);
-    wiringPiI2CWrite(fd, 0b00000000);
-    wiringPiI2CWrite(fd, 0b00100011);
-    wiringPiI2CWrite(fd, 1);
-    wiringPiI2CWrite(fd, 0x17);
-    wiringPiI2CWrite(fd, 0x10);
-    wiringPiI2CWrite(fd, 0x23);
+    // Configura el reloj RTC
+    wiringPiI2CWriteReg8(fd, 0x00, 0b00100011);  // Configura el registro de control
+    wiringPiI2CWriteReg8(fd, 0x01, 0x01);        
+    wiringPiI2CWriteReg8(fd, 0x02, 0x17);        
+    wiringPiI2CWriteReg8(fd, 0x03, 0x10);        
+    wiringPiI2CWriteReg8(fd, 0x04, 0x23);        
 
-    while(1){
-        wiringPiI2CWrite (fd, 0xD1);
-        wiringPiI2CWrite(fd, 0);
-        segs = wiringPiI2CRead(fd);
-        min = wiringPiI2CRead(fd);
-        h =  wiringPiI2CRead(fd);
-        na =  wiringPiI2CRead(fd);
-        day =  wiringPiI2CRead(fd);
-        month = wiringPiI2CRead(fd);
-        year = wiringPiI2CRead(fd);
-
-
+    while (1) {
+        // Leer la hora y la fecha
+        SEC = wiringPiI2CReadReg8(fd, 0x00);
+        MIN = wiringPiI2CReadReg8(fd, 0x01);
+        H = wiringPiI2CReadReg8(fd, 0x02);
+        DAY = wiringPiI2CReadReg8(fd, 0x04);
+        MONTH = wiringPiI2CReadReg8(fd, 0x05);
+        YEAR = wiringPiI2CReadReg8(fd, 0x06);
+        
+        // Imprimir la hora y la fecha
+        printf("Hora: %02x:%02x:%02x\n", H, MIN, SEC);
+        printf("Fecha: %02x/%02x/%02x\n", DAY, MONTH, YEAR);
+        
+        delay(1000); // Espera 1 segundo
     }
 
     return 0;
 }
-
-
-
