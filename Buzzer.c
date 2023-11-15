@@ -13,7 +13,7 @@ int main(){
 wiringPiSetup();
 pinMode(25, OUTPUT);
 pullUpDnControl(27, PUD_UP);
-pullUpDnControl(26, PUD_UP);
+pullUpDnControl(6, PUD_UP);
 f = (1/2959)/2;
 
 
