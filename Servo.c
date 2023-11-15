@@ -1,29 +1,42 @@
 #include <wiringPi.h>
 #include <stdio.h>
 
-#define SERVO_PIN 18  
+#define PWM_PIN 18
 
-int main(void) {
+int valor_variable;
+char comando[100];
+int main() {
     if (wiringPiSetupGpio() == -1) {
-        printf("Error al inicializar WiringPi.\n");
+        fprintf(stderr, "Error al inicializar WiringPi\n");
         return 1;
     }
 
-    pinMode(SERVO_PIN, PWM_OUTPUT);
+    /* system(" gpio mode 18 pwm");
+    system(" gpio pwm-ms");
+    system(" gpio pwmc 192");
+    system(" gpio pwmr 2000");
 
-    printf("Moviendo el servo...\n");
 
-    while (1) {
-        for (int i = 50; i <= 250; i++) {
-            pwmWrite(SERVO_PIN, i);
-            delay(10);
-        }
+    snprintf(comando, sizeof(comando), "gpio pwm %d", valor_variable);
+    system(comando);
+ */
 
-        for (int i = 250; i >= 50; i--) {
-            pwmWrite(SERVO_PIN, i);
-            delay(10);
-        }
-    }
+    pinMode(PWM_PIN, PWM_OUTPUT);
+    
+    // Configuraciones de PWM
+    pwmSetMode(PWM_MODE_MS);  
+    pwmSetClock(192);         
+    pwmSetRange(2000);        
+
+    // Establece el valor PWM
+    pwmWrite(PWM_PIN, 150);
+    delay(2000);  
+
+    // Cambia el valor PWM
+    pwmWrite(PWM_PIN, 200);
+    delay(2000);  
 
     return 0;
 }
+
+
