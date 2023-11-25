@@ -61,7 +61,7 @@ int main(){
 void incremento(void){
     for (int i = 0; i < 4; i++) {
         bit = (contador >> i) & 1; 
-        digitalWrite(ledPins[i], bit);
+        digitalWrite(leds[i], bit);
   }
 
 }
@@ -69,7 +69,7 @@ void incremento(void){
 void decremento(void){
     for (int i = 0; i < 4; i++) {
         bit2 = (contador >> i) & 1; 
-        digitalWrite(ledPins[i], bit);
+        digitalWrite(leds[i], bit2);
   }
 
 }

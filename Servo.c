@@ -1,9 +1,11 @@
 #include <wiringPi.h>
 #include <stdio.h>
+#include <stdlib.h>
 
-#define PWM_PIN 18
+#define PWM_PIN 26
 
-int valor_variable;
+int valor_variable = 200;
+int i;
 char comando[100];
 int main() {
     if (wiringPiSetupGpio() == -1) {
@@ -11,30 +13,18 @@ int main() {
         return 1;
     }
 
-    /* system(" gpio mode 18 pwm");
+    system(" gpio mode 26 pwm");
     system(" gpio pwm-ms");
     system(" gpio pwmc 192");
     system(" gpio pwmr 2000");
-
-
-    snprintf(comando, sizeof(comando), "gpio pwm %d", valor_variable);
-    system(comando);
- */
-
-    pinMode(PWM_PIN, PWM_OUTPUT);
     
-    // Configuraciones de PWM
-    pwmSetMode(PWM_MODE_MS);  
-    pwmSetClock(192);         
-    pwmSetRange(2000);        
+    for (int i = 0; i < 250; i++){
+    sprintf(comando,"gpio pwm 26 %d" ,i);
+    system(comando);
+ }   
+ 
 
-    // Establece el valor PWM
-    pwmWrite(PWM_PIN, 150);
-    delay(2000);  
 
-    // Cambia el valor PWM
-    pwmWrite(PWM_PIN, 200);
-    delay(2000);  
 
     return 0;
 }

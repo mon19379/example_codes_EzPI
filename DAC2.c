@@ -15,15 +15,17 @@ Recuerde compilar usando -lwiringPi
 #include <wiringPi.h>
 #include <wiringPiSPI.h>
 #define SPI_CANAL 1 // Canal SPI de la Raspberry Pi, 0 ó 1
-#define SPI_VEL 1500000	 // Velocidad de la comunicación SPI (reloj, en HZ)
+#define SPI_VEL 15000000// Velocidad de la comunicación SPI (reloj, en HZ)
 // Máxima de 3.6 MHz con VDD = 5V, 1.2 MHz con VDD =
+uint16_t inf;
 
-uint16_t SPI_manda_recibe(uint8_t); // prototipo
+
+uint16_t SPI_manda_recibe(uint16_t); // prototipo
 
 
 int main(void)
 {
-uint8_t a_enviar = 0, recibido; // variables de 1 byte
+uint16_t a_enviar = 0, recibido; // variables de 1 byte
 // Configuración del SPI
 if(wiringPiSPISetup(SPI_CANAL, SPI_VEL) < 0) {
 printf("wiringPiSPISetup falló\n");
@@ -38,13 +40,18 @@ while(1)
 // Puede que el esclavo sí requiera algún valor particular, como un byte de
 // inicio o configuración.
 a_enviar++; // a_enviar = LO QUE SE QUIERA ENVIAR;
-if(a_enviar == 100){
+
+
+if(a_enviar > 4095){
     a_enviar = 0;
 }
 recibido = SPI_manda_recibe(a_enviar); // devuelve lo que se recibió por SPI
-printf("Enviado: %d, Recibido: %d\n", a_enviar);
+//printf("Enviado: %d, Recibido: %d\n", a_enviar);
+printf("Rec: 0x%04X\n", recibido);
+usleep(100);
 fflush(stdout);
-sleep(1); // Esperar el tiempo que se desee. Se puede usar usleep,
+
+ // Esperar el tiempo que se desee. Se puede usar usleep,
 // o se puede establecer una tarea periódica.
 }
 return 0;
@@ -52,19 +59,27 @@ return 0;
 // SPI_manda_recibe: función que implementa la comunicación SPI con el esclavo.
 // Entrada: byte a mandar al esclavo
 // Salida: byte que se recibió del esclavo.
-uint16_t SPI_manda_recibe(uint8_t valor)
+uint16_t SPI_manda_recibe(uint16_t valor)
 {
 
 uint8_t dato[2]; // buffer para la comunicación por SPI
 uint16_t resultado1;
 
-dato[0] = 0b00110000;
-dato[1] = valor;
+
+
+inf = 0b0111000000000000 | valor; 
+
+dato[0] = (0b00000000 | (inf >> 8)); //or con los mas significativos
+dato[1] = (0b00000000 | inf);
 // La siguiente función realiza la transacción simultánea de escritura/lectura
 // a través del canal seleccionado de SPI. El dato que estaba en el buffer se
 // sobreescribe con el dato que regresa por el bus SPI.
 
 wiringPiSPIDataRW(SPI_CANAL, dato, 2);
-resultado1 = (data[0]<< 8  | dato[1]);
-return(resultado1);
+
+return(inf);
 }
+
+
+
+
