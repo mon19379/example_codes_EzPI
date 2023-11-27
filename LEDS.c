@@ -11,7 +11,7 @@
 #include <unistd.h>
 #include <stdint.h>
 #include <wiringPi.h>
-#include <wiringSerial.h>
+
 
 void incremento(void);//Prototipo
 void decremento(void);//Prototipo

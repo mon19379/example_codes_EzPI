@@ -26,11 +26,13 @@ int main() {
     }
 
     // Configuración del RTC
-    wiringPiI2CWriteReg8(fd, 0x00, 0b00100011);  // Configura el registro de control
-    wiringPiI2CWriteReg8(fd, 0x01, 0x01);        
-    wiringPiI2CWriteReg8(fd, 0x02, 0x17);        
-    wiringPiI2CWriteReg8(fd, 0x03, 0x10);        
-    wiringPiI2CWriteReg8(fd, 0x04, 0x23);        
+    wiringPiI2CWriteReg8(fd, 0x00, 0X00);  // Configura segundos
+    wiringPiI2CWriteReg8(fd, 0x01, 0x19);  // Configura minutos    
+    wiringPiI2CWriteReg8(fd, 0x02, 0x13);  // Configura horas      
+    wiringPiI2CWriteReg8(fd, 0x04, 0x27);  // Configura dia
+    wiringPiI2CWriteReg8(fd, 0x05, 0x11);  // Configura mes
+    wiringPiI2CWriteReg8(fd, 0x06, 0x23);  // Configura año
+  
 
     while (1) {
         // Leer la hora y la fecha

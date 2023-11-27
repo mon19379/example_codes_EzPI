@@ -32,8 +32,8 @@ int main() {
     for (int i = 0; i < 250; i++){
     sprintf(comando,"gpio pwm 26 %d" ,i);
     system(comando);
- }   
- 
+    }   
+
     return 0;
 }
 
