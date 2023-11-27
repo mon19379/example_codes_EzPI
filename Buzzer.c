@@ -1,3 +1,12 @@
+/**************************************************************************************************************************************************/
+// Buzzer.c
+//Desarrollado y comentado por: Francisco José Montúfar Gudiel
+//Programa que permite el uso de un Buzzer pasivo utilizando la Rasbperry Pi.
+//Se usan funciones de la librería wiringPi.
+//Recuerde compilar usando -lwiringPi
+/**************************************************************************************************************************************************/
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -32,7 +41,7 @@ while(1){
     else{
         flag = 1;
     }
-    //Condicional para generar una señal cuadrada a ciert frecuencia encendiendo y apagando un pin
+    //Condicional para generar una señal cuadrada a cierta frecuencia encendiendo y apagando un pin
     if(flag == 1){
         digitalWrite(25, HIGH);
         delay(1000/f);
