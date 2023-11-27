@@ -1,22 +1,31 @@
+/**************************************************************************************************************************************************/
+// I2C.c
+//Fesarrollado y comentado por: Francisco José Montúfar Gudiel
+//Programa que configura I2C entre la Rasbperry Pi (maestro)
+//y RTC DS3231 (esclavo).
+//Se usan funciones de la librería wiringPi.
+//Recuerde compilar usando -lwiringPi
+/**************************************************************************************************************************************************/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
 
-#define RTC_ADDR 0x68
+#define RTC_ADDR 0x68 //Se define el registro del sensor RTC DS3231
 
-uint8_t SEC, MIN, H, DAY, MONTH, YEAR;
+uint8_t SEC, MIN, H, DAY, MONTH, YEAR; //Se definen variables
 
 int main() {
     int fd;
     
-    if ((fd = wiringPiI2CSetup(RTC_ADDR)) == -1) {
+    if ((fd = wiringPiI2CSetup(RTC_ADDR)) == -1) { //Se inicializa I2C de WiringPi
         printf("Error al abrir la conexión I2C con el RTC\n");
-        return 1;
+        return (-1);
     }
 
-    // Configura el reloj RTC
+    // Configuración del RTC
     wiringPiI2CWriteReg8(fd, 0x00, 0b00100011);  // Configura el registro de control
     wiringPiI2CWriteReg8(fd, 0x01, 0x01);        
     wiringPiI2CWriteReg8(fd, 0x02, 0x17);        
