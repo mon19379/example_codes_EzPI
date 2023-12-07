@@ -35,7 +35,7 @@ int main(){
 			
 			if(recibido == '\n'){//cuando lea un enter es por que ya se envió todo
 				
-			printf("Esto envió el arduino: %s\n", buffer);// se imprime lo recibido
+			printf("Esto envió el ESP: %s\n", buffer);// se imprime lo recibido
 			
 			ind = 0;
 			memset(buffer,0,sizeof(buffer)); //se limpia el buffer para volver a recibir datos

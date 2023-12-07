@@ -1,3 +1,12 @@
+/**************************************************************************************************************************************************/
+// Todo.c
+//Desarrollado y comentado por: Francisco José Montúfar Gudiel
+//Programa que permite el uso de diversos módulos y protocolos de la  Rasbperry Pi.
+//Se usan funciones de la librería wiringPi.
+//Recuerde compilar usando -lwiringPi y -lpthread
+/**************************************************************************************************************************************************/
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -25,7 +34,6 @@
 #define ENABLE 21
 
 //Variables hilo ADC
-char buffer[5]; //buffer de datos
 uint16_t get_ADC(int channel); //Prototipo de función
 uint16_t leds[] = {2,3,5,4}; //Arreglo con los numeros de pin de las LEDS
 uint16_t val; /// Variable para mapeo
@@ -39,6 +47,8 @@ int f;
 
 //Variables hilo I2C
 uint8_t SEC, MIN, H, DAY, MONTH, YEAR; //Se definen variables
+int fd2;
+
 
 //Variables hilo Servo
 int i;
@@ -46,9 +56,10 @@ char comando[100];
 
 //Variables UART
 int fd;
+uint8_t ind;
+char buffer[10000];
 
-
-
+//Hilo donde se utiliza ADC
 void ADC(void*ptr){
     
     uint16_t ADCvalue; //Variable para valor de ADC
@@ -76,6 +87,7 @@ void ADC(void*ptr){
     
     pthread_exit(0);
 }
+//Hilo donde se utilizan entradas y salidas digitales
 void Buzzer(void*ptr){
     while(1){
         //Se lee el estado de los botones
@@ -104,16 +116,17 @@ void Buzzer(void*ptr){
     }
     pthread_exit(0);
 }
+//Hilo donde se utiliza I2C
 void RTC(void*ptr){
 
     while(1){
         // Leer la hora y la fecha
-        SEC = wiringPiI2CReadReg8(fd, 0x00);
-        MIN = wiringPiI2CReadReg8(fd, 0x01);
-        H = wiringPiI2CReadReg8(fd, 0x02);
-        DAY = wiringPiI2CReadReg8(fd, 0x04);
-        MONTH = wiringPiI2CReadReg8(fd, 0x05);
-        YEAR = wiringPiI2CReadReg8(fd, 0x06);
+        SEC = wiringPiI2CReadReg8(fd2, 0x00);
+        MIN = wiringPiI2CReadReg8(fd2, 0x01);
+        H = wiringPiI2CReadReg8(fd2, 0x02);
+        DAY = wiringPiI2CReadReg8(fd2, 0x04);
+        MONTH = wiringPiI2CReadReg8(fd2, 0x05);
+        YEAR = wiringPiI2CReadReg8(fd2, 0x06);
         
         // Imprimir la hora y la fecha
         printf("Hora: %02x:%02x:%02x\n", H, MIN, SEC);
@@ -123,6 +136,7 @@ void RTC(void*ptr){
     }
     pthread_exit(0);
 }
+//Hilo donde se utiliza PWM
 void Servo(void*ptr){
     system(" gpio mode 26 pwm"); //Se establece el pin 26 como salida PWM
      //Se configura en modo MS, de tal manera que el Duty cycle se interprete como el
@@ -141,6 +155,7 @@ void Servo(void*ptr){
     }   
     
 }
+//Hilo donde se utiliza Stepper
 void STP(void*ptr){
     while(1){
         for(int i = 0; i< 200;i++){ // Ciclo para dar una vuelta completa, 200 steps para una vuelta completa
@@ -153,6 +168,7 @@ void STP(void*ptr){
     }
     pthread_exit(0);
 }
+//Hilo donde se utiliza UART
 void UART(void*ptr){
     while(1){
 		
@@ -178,6 +194,7 @@ void UART(void*ptr){
 	serialClose(fd);
     pthread_exit(0);
 }
+//
 int main (void){
     wiringPiSetup();
     pinMode(2, OUTPUT);//Pin 2 wiring pi como salida (LED1)
@@ -199,7 +216,7 @@ int main (void){
 		return(-1);
 	}
 
-    if ((fd = wiringPiI2CSetup(RTC_ADDR)) == -1) { //Se inicializa I2C de WiringPi
+    if ((fd2 = wiringPiI2CSetup(RTC_ADDR)) == -1) { //Se inicializa I2C de WiringPi
         printf("Error al abrir la conexión I2C con el RTC\n");
         return (-1);
     }
@@ -209,14 +226,15 @@ int main (void){
 	return (-1) ;
 
 }
+    //Configuración RTC
+    wiringPiI2CWriteReg8(fd, 0x00, 0x00);  // Configura segundos
+    wiringPiI2CWriteReg8(fd, 0x01, 0x19);  // Configura minutos    
+    wiringPiI2CWriteReg8(fd, 0x02, 0x13);  // Configura horas      
+    wiringPiI2CWriteReg8(fd, 0x04, 0x27);  // Configura dia
+    wiringPiI2CWriteReg8(fd, 0x05, 0x11);  // Configura mes
+    wiringPiI2CWriteReg8(fd, 0x06, 0x23);  // Configura año
 
-    wiringPiI2CWriteReg8(fd, 0x00, 0b00100011);  // Configura el registro de control
-    wiringPiI2CWriteReg8(fd, 0x01, 0x01);        
-    wiringPiI2CWriteReg8(fd, 0x02, 0x17);        
-    wiringPiI2CWriteReg8(fd, 0x03, 0x10);        
-    wiringPiI2CWriteReg8(fd, 0x04, 0x23);  
-
-
+    //Se crean los hilos
     pthread_t thread1;
     pthread_t thread2;
     pthread_t thread3;
@@ -225,12 +243,12 @@ int main (void){
     pthread_t thread6;
   
 
-    pthread_create(&thread1, NULL, (void*)&ADC, NULL);
-    pthread_create(&thread2, NULL, (void*)&Buzzer, NULL);
-    pthread_create(&thread3, NULL, (void*)&RTC, NULL);
-    pthread_create(&thread4, NULL, (void*)&Servo, NULL);
-    pthread_create(&thread5, NULL, (void*)&STP, NULL);
-    pthread_create(&thread6, NULL, (void*)&UART, NULL);
+    pthread_create(&thread1, NULL, (void*)&ADC, NULL);//Hilo ADC
+    pthread_create(&thread2, NULL, (void*)&Buzzer, NULL);//Hilo Buzzer
+    pthread_create(&thread3, NULL, (void*)&RTC, NULL);//Hilo I2C
+    pthread_create(&thread4, NULL, (void*)&Servo, NULL);//Hilo PWM
+    pthread_create(&thread5, NULL, (void*)&STP, NULL);//Hilo Stepper
+    pthread_create(&thread6, NULL, (void*)&UART, NULL);//Hilo UART
 
     pthread_join (thread1,NULL);
     pthread_join (thread2,NULL);

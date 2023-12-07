@@ -26,7 +26,7 @@ int main() {
     }
 
     // Configuración del RTC
-    wiringPiI2CWriteReg8(fd, 0x00, 0X00);  // Configura segundos
+    wiringPiI2CWriteReg8(fd, 0x00, 0x00);  // Configura segundos
     wiringPiI2CWriteReg8(fd, 0x01, 0x19);  // Configura minutos    
     wiringPiI2CWriteReg8(fd, 0x02, 0x13);  // Configura horas      
     wiringPiI2CWriteReg8(fd, 0x04, 0x27);  // Configura dia
