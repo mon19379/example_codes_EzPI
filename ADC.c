@@ -82,7 +82,7 @@ uint16_t get_ADC(int ADC_chan) //Función para configurar el MCP3002 y enviar lo
 	spiData[1] = 0;							
 
 	wiringPiSPIDataRW(SPI_CHANNEL, spiData, 2); //Se envían 2 bytes por SPI	
-	resultado = (spiData[0] << 8) | spiData[1]; //Se construye variable de 3 bytes para el resultado
+	resultado = (spiData[0] << 8) | spiData[1]; //Se construye variable de 2 bytes para el resultado
 
 	return(resultado);
 }
