@@ -1,7 +1,7 @@
 /**************************************************************************************************************************************************/
 // UART.c
 //Desarrollado y comentado por: Francisco José Montúfar Gudiel
-//Programa que permite el uso del protocolo UART utilizando la  Rasbperry Pi.
+//Programa que permite el uso del protocolo UART utilizando la  Rasbperry Pi para comunicarse con un ESP32.
 //Se usan funciones de la librería wiringPi.
 //Recuerde compilar usando -lwiringPi
 /**************************************************************************************************************************************************/
@@ -14,7 +14,7 @@
 #include <wiringSerial.h>
 #include <string.h>
 #include <errno.h>
-char buffer[250];
+char buffer[10000];
 uint8_t ind;
 
 int main(){
@@ -47,6 +47,7 @@ int main(){
 		usleep(1000); //tiempo de espera
 
 	}
+		serialFlush(fd);
 		serialClose(fd);
         return 0;
 

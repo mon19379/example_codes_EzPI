@@ -156,25 +156,26 @@ void STP(void*ptr){
 void UART(void*ptr){
     while(1){
 		
-		if(serialDataAvail(fd)){
-			char recibido = serialGetchar(fd);
-			buffer[ind++] = recibido;
+		if(serialDataAvail(fd)){ //Verifica que hayan datos en el puerto serial
+			char recibido = serialGetchar(fd); //guarda los caracteres recibidos en una variable
+			buffer[ind++] = recibido; //Se guardan cada caracter en un arreglo
 			
-			if(recibido == '\n'){
+			if(recibido == '\n'){//cuando lea un enter es por que ya se envió todo
 				
-			printf("Esto envió el arduino: %s\n", buffer);
+			printf("Esto envió el arduino: %s\n", buffer);// se imprime lo recibido
 			
 			ind = 0;
-			memset(buffer,0,sizeof(buffer));
+			memset(buffer,0,sizeof(buffer)); //se limpia el buffer para volver a recibir datos
 			}
 		} 
 
 	
-		serialPuts(fd,"hola, esto es una prueba del EzPi\n");
-		usleep(1000);
+		serialPuts(fd,"hola, esto es una prueba del EzPi\n");// se envía un string
+		usleep(1000); //tiempo de espera
 
 	}
-    serialClose(fd);
+	serialFlush(fd);
+	serialClose(fd);
     pthread_exit(0);
 }
 int main (void){
