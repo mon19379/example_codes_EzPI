@@ -1,3 +1,11 @@
+#**************************************************************************************************************************************************/
+# pwm.py
+#Basado en el código por: http://www.electronicwings.com
+#Adaptado y comentado por: Francisco José Montúfar Gudiel
+#Programa que configura una señal pwm para mover un servomotor
+#Compilar y correr con el comando python pwm.py
+#**************************************************************************************************************************************************/
+
 import RPi.GPIO as GPIO
 from time import sleep #Se imprtan las librerias
 
